@@ -173,7 +173,8 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcnN5ZHd2cm13cm55cm90Z2RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MjUxNjUsImV4cCI6MjA3NzQwMTE2NX0.7xiMRkxH72DTTzOR_CdtCXqSJXyg7pNbu4jh4zhjGSs';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const WIDGET_ID = 'bragi';
+    const urlParams = new URLSearchParams(window.location.search);
+    const characterId = urlParams.get('id') || 'bragi'; // dynamic per Notion page
     const statKeys = ['armour', 'vulnerable_armour', 'hit_size', 'base_vulnerable_size'];
     const statValues = {};
 
@@ -181,7 +182,7 @@
       const { data, error } = await supabase
         .from('widgets')
         .select('armour, vulnerable_armour, hit_size, base_vulnerable_size')
-        .eq('id', WIDGET_ID)
+        .eq('id', characterId)
         .single();
 
       if (error) {
@@ -200,7 +201,7 @@
       const { error } = await supabase
         .from('widgets')
         .update(updateData)
-        .eq('id', WIDGET_ID);
+        .eq('id', characterId);
 
       if (error) console.error('Error saving stats:', error);
     }
