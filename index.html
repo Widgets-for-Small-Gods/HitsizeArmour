@@ -38,38 +38,32 @@
       font-weight: bold;
       margin: 0;
       text-align: center;
-      color: #333; /* or any color you like */
+      color: #333;
     }    
     .stat-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.5em;
-      min-height: 6em; /* was 3em — make the rows taller */
+      min-height: 6em;
       padding: 0.5em 0;
     }
 
     .stat-row.vulnerable-size,
     .stat-row.vulnerable-armor {
-      background-color: #ffffff; /* White fill */
-      border-radius: 8px;        /* Rounded corners */
-      padding: 0.5em;              /* Add some internal padding */
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 0.5em;
     }
 
     .stat-row.important-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5em;
-      min-height: 6em; /* was 3em — make the rows taller */
-      padding: 0.5em 0;
-      background-color: #eeeeee; /* very light grey */
+      background-color: #eeeeee;
       border-radius: 8px;
       padding: 0.5em;
     }
     
     .stat-icon {
-      flex: 0 0 5em; /* force the icon column to be 6em wide */
+      flex: 0 0 5em;
       width: 6em;
       height: 6em;
       max-height: 6em;
@@ -82,15 +76,14 @@
     }
 
     .stat-value.important {
-      font-size: 2em; /* bigger */
-      color: #000;    /* maybe even a slightly darker color */
-      text-align: center;
+      font-size: 2em;
+      color: #000;
       font-weight: bold;
     }
 
     .divider-container {
       width: 100%;
-      padding: 0.1em 0 1em 0; /* control space around divider */
+      padding: 0.1em 0 1em 0;
       display: flex;
       justify-content: center;
     }
@@ -128,144 +121,109 @@
       <h2 class="section-heading">Hit Size</h2>
       <div class="stat-row vulnerable-size">
         <img class="stat-icon" src="vulnerable_size.png" alt="Vulnerable Size">
-        <div id="bragi_base_vulnerablesize" class="stat-value">...</div>
+        <div id="base_vulnerable_size" class="stat-value">...</div>
         <div class="button-group">
-          <button class="small-btn" onclick="updateStat('bragi_base_vulnerablesize', 1)">+</button>
-          <button class="small-btn" onclick="updateStat('bragi_base_vulnerablesize', -1)">-</button>
+          <button class="small-btn" onclick="updateStat('base_vulnerable_size', 1)">+</button>
+          <button class="small-btn" onclick="updateStat('base_vulnerable_size', -1)">-</button>
         </div>
       </div>
+
       <!-- Hit Size -->
       <div class="stat-row important-row">
         <img class="stat-icon" src="hitsize.png" alt="Hit Size">
-        <div id="bragi_hitsize" class="stat-value important">...</div>
+        <div id="hit_size" class="stat-value important">...</div>
         <div class="button-group">
-          <button class="small-btn" onclick="updateStat('bragi_hitsize', 1)">+</button>
-          <button class="small-btn" onclick="updateStat('bragi_hitsize', -1)">-</button>
+          <button class="small-btn" onclick="updateStat('hit_size', 1)">+</button>
+          <button class="small-btn" onclick="updateStat('hit_size', -1)">-</button>
         </div>
       </div>
-      <!-- Small gap before Vulnerable Armor -->
+
       <div class="divider-container">
         <img src="divider.png" alt="Divider">
       </div>
+
       <!-- Vulnerable Armor -->
       <h2 class="section-heading">Armor</h2>
       <div class="stat-row vulnerable-armor">
         <img class="stat-icon" src="v_armor.png" alt="Vulnerable Armor">
-        <div id="bragi_v_armor" class="stat-value">+<span class="value">...</span></div>
+        <div id="vulnerable_armour" class="stat-value">+<span class="value">...</span></div>
         <div class="button-group">
-          <button class="small-btn" onclick="updateStat('bragi_v_armor', 1)">+</button>
-          <button class="small-btn" onclick="updateStat('bragi_v_armor', -1)">-</button>
+          <button class="small-btn" onclick="updateStat('vulnerable_armour', 1)">+</button>
+          <button class="small-btn" onclick="updateStat('vulnerable_armour', -1)">-</button>
         </div>
       </div>
+
       <!-- Armor -->
       <div class="stat-row important-row">
         <img class="stat-icon" src="armor.png" alt="Armor">
-        <div id="bragi_armor" class="stat-value important">...</div>
+        <div id="armour" class="stat-value important">...</div>
         <div class="button-group">
-          <button class="small-btn" onclick="updateStat('bragi_armor', 1)">+</button>
-          <button class="small-btn" onclick="updateStat('bragi_armor', -1)">-</button>
+          <button class="small-btn" onclick="updateStat('armour', 1)">+</button>
+          <button class="small-btn" onclick="updateStat('armour', -1)">-</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    const binId = '6804eef68960c979a589342b';
-    const apiKey = '$2a$10$8TH7O/Zi1by5brUwAQ1sHuhni1xdi8MIG/A.mxonUfTPkihZXCCZ.';
-    const baseUrl = `https://api.jsonbin.io/v3/b/${binId}`;
-    const headers = {
-      'X-Master-Key': apiKey,
-      'Content-Type': 'application/json'
-    };
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const stats = [
-      'bragi_base_vulnerablesize',
-      'bragi_hitsize',
-      'bragi_v_armor',
-      'bragi_armor'
-    ];
-    let statValues = {};
+    // --- Supabase config ---
+    const SUPABASE_URL = 'https://emrsydwvrmwrnyrotgdl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcnN5ZHd2cm13cm55cm90Z2RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MjUxNjUsImV4cCI6MjA3NzQwMTE2NX0.7xiMRkxH72DTTzOR_CdtCXqSJXyg7pNbu4jh4zhjGSs';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function fetchStats() {
-      try {
-        const res = await fetch(`${baseUrl}/latest`, { headers });
-        const data = await res.json();
-        stats.forEach(key => {
-          statValues[key] = data.record[key] || 0;
-        });
-        renderStats();
-      } catch (err) {
-        console.error('Error fetching stats:', err);
-        stats.forEach(key => {
-          document.getElementById(key).innerText = 'Err';
-        });
+    const WIDGET_ID = 'bragi';
+    const statKeys = ['armour', 'vulnerable_armour', 'hit_size', 'base_vulnerable_size'];
+    const statValues = {};
+
+    async function loadStats() {
+      const { data, error } = await supabase
+        .from('widgets')
+        .select('armour, vulnerable_armour, hit_size, base_vulnerable_size')
+        .eq('id', WIDGET_ID)
+        .single();
+
+      if (error) {
+        console.error('Error loading stats:', error);
+        return;
       }
-    }
-    
-    function renderStats() {
-      stats.forEach(key => {
-        const el = document.getElementById(key);
-        let display = statValues[key];
-    
-        if (key === 'bragi_v_armor') {
-          display = '+' + display;
-        }
-        if (key === 'bragi_hitsize') {
-          display = 'DC ' + display;
-        }
-        if (key === 'bragi_base_vulnerablesize') {
-          display = 'DC ' + display;
-        }
-    
-        el.innerText = display;
-      });
-    }
-function renderStats() {
-  stats.forEach(key => {
-    const el = document.getElementById(key);
-    let display;
 
-    if (key === 'bragi_base_vulnerablesize') {
-      // show base_vulnerablesize + v_armor
-      display = 'DC ' + (statValues['bragi_base_vulnerablesize']
-              + statValues['bragi_v_armor']);
-    } else if (key === 'bragi_v_armor') {
-      // keep the "+" prefix on v_armor
-      display = '+' + statValues[key];
-    } else if (key === 'bragi_hitsize') {
-      display = 'DC ' + statValues[key];
-    } else { 
-      display = statValues[key];
-    }
-
-    el.innerText = display;
-  });
-}
-    async function updateStat(key, change) {
-      statValues[key] = Math.max(0, statValues[key] + change);
+      statKeys.forEach(k => statValues[k] = data[k] ?? 0);
       renderStats();
-
-      // Fetch full record to preserve other fields
-      const res = await fetch(`${baseUrl}/latest`, { headers });
-      const data = await res.json();
-      const fullRecord = data.record;
-
-      // Update our stats
-      stats.forEach(k => {
-        fullRecord[k] = statValues[k];
-      });
-
-      // PUT updated record
-      await fetch(baseUrl, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(fullRecord)
-      });
     }
 
-    // Initial load
-    fetchStats();
+    async function saveStats() {
+      const updateData = {};
+      statKeys.forEach(k => updateData[k] = statValues[k]);
+
+      const { error } = await supabase
+        .from('widgets')
+        .update(updateData)
+        .eq('id', WIDGET_ID);
+
+      if (error) console.error('Error saving stats:', error);
+    }
+
+    function renderStats() {
+      // Show combined + formatted values
+      document.getElementById('base_vulnerable_size').textContent =
+        'DC ' + (statValues.base_vulnerable_size + statValues.vulnerable_armour);
+
+      document.getElementById('hit_size').textContent = 'DC ' + statValues.hit_size;
+      document.getElementById('vulnerable_armour').textContent = '+' + statValues.vulnerable_armour;
+      document.getElementById('armour').textContent = statValues.armour;
+    }
+
+    async function updateStat(key, delta) {
+      statValues[key] = Math.max(0, statValues[key] + delta);
+      renderStats();
+      await saveStats();
+    }
+
+    // Initialize
+    loadStats();
+    window.updateStat = updateStat;
   </script>
 </body>
 </html>
-
